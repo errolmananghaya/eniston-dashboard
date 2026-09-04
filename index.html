@@ -1,603 +1,630 @@
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+```
+<title>GearUp Knowledge Base</title>
 
-    <title>Knowledge Base Login</title>
+<script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
 
-    <!-- Microsoft Authentication Library -->
-    <script src="https://alcdn.msauth.net/browser/2.38.2/js/msal-browser.min.js"></script>
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
-    <style>
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background:
+            radial-gradient(
+                circle at 20% 20%,
+                rgba(37, 99, 235, 0.18),
+                transparent 35%
+            ),
+            radial-gradient(
+                circle at 80% 80%,
+                rgba(59, 130, 246, 0.12),
+                transparent 35%
+            ),
+            #08111f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+    }
 
-        * {
-            box-sizing: border-box;
+    .background-glow {
+        position: fixed;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.10);
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+    .glow-one {
+        top: -200px;
+        left: -150px;
+    }
+
+    .glow-two {
+        bottom: -250px;
+        right: -150px;
+    }
+
+    .page {
+        width: 100%;
+        max-width: 480px;
+        padding: 24px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .login-card {
+        background: rgba(15, 27, 45, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 20px;
+        padding: 44px 42px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.40);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 24px;
+    }
+
+    .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 700;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+    }
+
+    .title {
+        text-align: center;
+        font-size: 30px;
+        line-height: 1.2;
+        font-weight: 700;
+        letter-spacing: -0.7px;
+        margin: 0;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 15px;
+        margin: 10px 0 32px;
+    }
+
+    .divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .login-label {
+        display: block;
+        color: #cbd5e1;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .login-description {
+        color: #94a3b8;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .microsoft-button {
+        width: 100%;
+        min-height: 54px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1f2937;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease;
+    }
+
+    .microsoft-button:hover {
+        background: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.20);
+    }
+
+    .microsoft-button:active {
+        transform: translateY(0);
+    }
+
+    .microsoft-button:disabled {
+        opacity: 0.65;
+        cursor: wait;
+        transform: none;
+    }
+
+    .ms-icon {
+        width: 20px;
+        height: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 2px;
+    }
+
+    .ms-icon span {
+        display: block;
+    }
+
+    .ms-red {
+        background: #f35325;
+    }
+
+    .ms-green {
+        background: #81bc06;
+    }
+
+    .ms-blue {
+        background: #05a6f0;
+    }
+
+    .ms-yellow {
+        background: #ffba08;
+    }
+
+    #status {
+        min-height: 22px;
+        margin-top: 18px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .security-note {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 26px;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 22px;
+        color: #475569;
+        font-size: 11px;
+    }
+
+    @media (max-width: 520px) {
+        .page {
+            padding: 18px;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background: #f3f6fa;
-
-            min-height: 100vh;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .login-card {
+            padding: 36px 26px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-
-            background: white;
-
-            padding: 40px;
-
-            border-radius: 14px;
-
-            box-shadow:
-                0 8px 30px rgba(0,0,0,0.12);
-
-            text-align: center;
+        .title {
+            font-size: 27px;
         }
-
-        h1 {
-            margin-top: 0;
-            margin-bottom: 10px;
-
-            font-size: 28px;
-
-            color: #1f2937;
-        }
-
-        .subtitle {
-            color: #6b7280;
-
-            margin-bottom: 30px;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-        }
-
-        button {
-            width: 100%;
-
-            padding: 14px;
-
-            border: none;
-
-            border-radius: 8px;
-
-            background: #2563eb;
-
-            color: white;
-
-            font-size: 16px;
-
-            font-weight: bold;
-
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        button:disabled {
-            background: #9ca3af;
-
-            cursor: not-allowed;
-        }
-
-        #status {
-            margin-top: 20px;
-
-            padding: 12px;
-
-            border-radius: 8px;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-
-            display: none;
-        }
-
-        .success {
-            display: block !important;
-
-            background: #dcfce7;
-
-            color: #166534;
-        }
-
-        .error {
-            display: block !important;
-
-            background: #fee2e2;
-
-            color: #991b1b;
-        }
-
-        .info {
-            display: block !important;
-
-            background: #dbeafe;
-
-            color: #1e40af;
-        }
-
-        .user-info {
-            margin-top: 20px;
-
-            text-align: left;
-
-            background: #f9fafb;
-
-            padding: 15px;
-
-            border-radius: 8px;
-
-            font-size: 14px;
-
-            display: none;
-        }
-
-        .user-info strong {
-            color: #374151;
-        }
-
-    </style>
+    }
+</style>
+```
 
 </head>
 
 <body>
 
-<div class="container">
+```
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
 
-    <h1>Knowledge Base</h1>
+<div class="page">
 
-    <div class="subtitle">
-        Sign in with your Microsoft 365 account
-        to access the Knowledge Base.
+    <div class="login-card">
+
+        <div class="logo-container">
+            <div class="logo">
+                G
+            </div>
+        </div>
+
+        <h1 class="title">
+            Welcome to GearUp
+        </h1>
+
+        <div class="subtitle">
+            Knowledge Base
+        </div>
+
+        <div class="divider"></div>
+
+        <span class="login-label">
+            SIGN IN
+        </span>
+
+        <div class="login-description">
+            Sign in with your Microsoft 365 account
+            to access the GearUp Knowledge Base.
+        </div>
+
+        <button
+            id="loginButton"
+            class="microsoft-button"
+        >
+            <div class="ms-icon">
+                <span class="ms-red"></span>
+                <span class="ms-green"></span>
+                <span class="ms-blue"></span>
+                <span class="ms-yellow"></span>
+            </div>
+
+            <span id="loginText">
+                Sign in with Microsoft 365
+            </span>
+        </button>
+
+        <div id="status"></div>
+
+        <div class="security-note">
+            <span>🔒</span>
+            <span>
+                Secure Microsoft sign-in
+            </span>
+        </div>
+
     </div>
 
-    <button
-        id="loginButton"
-        onclick="login()">
-
-        Sign in with Microsoft 365
-
-    </button>
-
-    <div id="status"></div>
-
-    <div
-        id="userInfo"
-        class="user-info">
-
-        <div>
-            <strong>Name:</strong>
-            <span id="userName"></span>
-        </div>
-
-        <div style="margin-top:8px;">
-            <strong>Email:</strong>
-            <span id="userEmail"></span>
-        </div>
-
+    <div class="footer">
+        GearUp Knowledge Base
     </div>
 
 </div>
 
-
 <script>
 
-    // =========================================================
-    // MICROSOFT LOGIN CONFIGURATION
-    // =========================================================
+    console.log("=================================");
+    console.log("GEARUP MICROSOFT 365 LOGIN");
+    console.log("=================================");
 
-    const msalConfig = {
+    /* =========================================================
+       MICROSOFT ENTRA CONFIGURATION
+    ========================================================= */
 
-        auth: {
+    const CLIENT_ID =
+        "521291ef-e00a-4a35-84d5-1ea1222a1b17";
 
-            clientId:
-                "271835fa-f4fc-4a40-88bd-86284c63de88",
+    const TENANT_ID =
+        "cfb75484-7ab4-4890-b396-acd3f3066d21";
 
-            authority:
-                "https://login.microsoftonline.com/cfb75484-7ab4-4890-b396-acd3f3066d21",
+    const AUTHORITY =
+        "https://login.microsoftonline.com/" +
+        TENANT_ID;
 
-            redirectUri:
-                "https://errolmananghaya.github.io/eniston-dashboard/"
-        },
+    /* =========================================================
+       LOCALHOST REDIRECT
+    ========================================================= */
 
-        cache: {
+    const REDIRECT_URI =
+        "http://localhost:5500/";
 
-            cacheLocation:
-                "sessionStorage",
+    /* =========================================================
+       ENISTON KNOWLEDGE BASE
+    ========================================================= */
 
-            storeAuthStateInCookie:
-                false
-        }
-    };
+    const ENISTON_URL =
+        "https://kbservice.pinintel.com/";
 
+    /* =========================================================
+       LOGIN SCOPES
+    ========================================================= */
 
-    // =========================================================
-    // MICROSOFT LOGIN SCOPES
-    // =========================================================
-    //
-    // IMPORTANT:
-    // We are NOT requesting Sites.ReadWrite.All.
-    // We only need basic Microsoft sign-in.
-    //
-
-    const loginScopes = [
+    const LOGIN_SCOPES = [
         "openid",
         "profile",
         "email"
     ];
 
+    /* =========================================================
+       MSAL CONFIGURATION
+    ========================================================= */
 
-    // =========================================================
-    // ENISTON KNOWLEDGE BASE
-    // =========================================================
+    const msalConfig = {
+        auth: {
+            clientId: CLIENT_ID,
+            authority: AUTHORITY,
+            redirectUri: REDIRECT_URI
+        },
 
-    const enistonUrl =
-        "https://kbservice.pinintel.com//";
-
-
-    // =========================================================
-    // CREATE MSAL INSTANCE
-    // =========================================================
+        cache: {
+            cacheLocation: "sessionStorage",
+            storeAuthStateInCookie: false
+        }
+    };
 
     const msalInstance =
         new msal.PublicClientApplication(
             msalConfig
         );
 
+    /* =========================================================
+       UI
+    ========================================================= */
 
-    // =========================================================
-    // SHOW STATUS
-    // =========================================================
+    const loginButton =
+        document.getElementById("loginButton");
 
-    function showStatus(message, type) {
+    const loginText =
+        document.getElementById("loginText");
+
+    function setStatus(message) {
 
         const status =
             document.getElementById("status");
 
-        status.innerHTML =
-            message;
-
-        status.className =
-            type;
+        if (status) {
+            status.textContent = message;
+        }
     }
 
+    /* =========================================================
+       CREATE IDENTITY TOKEN
+    ========================================================= */
 
-    // =========================================================
-    // BUTTON LOADING STATE
-    // =========================================================
+    function createIdentityToken(account) {
 
-    function setLoading(isLoading) {
+        const identity = {
+            name:
+                account.name ||
+                account.username ||
+                "",
 
-        const button =
-            document.getElementById("loginButton");
+            upn:
+                account.username ||
+                "",
 
-        button.disabled =
-            isLoading;
+            created:
+                Date.now()
+        };
 
-        button.innerText =
-            isLoading
-                ? "Signing in..."
-                : "Sign in with Microsoft 365";
+        console.log(
+            "Microsoft identity:",
+            identity
+        );
+
+        const identityJson =
+            JSON.stringify(identity);
+
+        const identityToken =
+            btoa(
+                unescape(
+                    encodeURIComponent(
+                        identityJson
+                    )
+                )
+            );
+
+        return identityToken;
     }
 
+    /* =========================================================
+       REDIRECT TO KNOWLEDGE BASE
+    ========================================================= */
 
-    // =========================================================
-    // SHOW USER INFORMATION
-    // =========================================================
+    function redirectToEniston(account) {
 
-    function showUser(account) {
+        const identityToken =
+            createIdentityToken(account);
 
-        document.getElementById(
-            "userName"
-        ).innerText =
-            account.name || "Unknown";
+        const redirectUrl =
+            ENISTON_URL +
+            "?t=" +
+            encodeURIComponent(
+                identityToken
+            );
 
+        console.log(
+            "Login successful."
+        );
 
-        document.getElementById(
-            "userEmail"
-        ).innerText =
-            account.username || "Unknown";
+        console.log(
+            "User:",
+            account.name
+        );
 
+        console.log(
+            "UPN:",
+            account.username
+        );
 
-        document.getElementById(
-            "userInfo"
-        ).style.display =
-            "block";
+        console.log(
+            "Redirecting to:",
+            redirectUrl
+        );
+
+        setStatus(
+            "Login successful. Opening Knowledge Base..."
+        );
+
+        window.location.href =
+            redirectUrl;
     }
 
+    /* =========================================================
+       PROCESS LOGIN
+    ========================================================= */
 
-    // =========================================================
-    // HANDLE MICROSOFT REDIRECT
-    // =========================================================
-
-    async function handleRedirect() {
+    async function processLogin() {
 
         try {
 
-            const response =
+            console.log(
+                "Processing Microsoft login..."
+            );
+
+            setStatus(
+                "Checking Microsoft sign-in..."
+            );
+
+            const redirectResult =
                 await msalInstance
                     .handleRedirectPromise();
 
+            /* =================================================
+               LOGIN JUST COMPLETED
+            ================================================= */
 
-            // No redirect result
-            if (!response) {
+            if (redirectResult) {
+
+                console.log(
+                    "Microsoft login completed."
+                );
+
+                if (
+                    !redirectResult.account
+                ) {
+
+                    throw new Error(
+                        "No Microsoft account was returned."
+                    );
+                }
+
+                redirectToEniston(
+                    redirectResult.account
+                );
 
                 return;
             }
 
-
-            console.log(
-                "Microsoft login response:",
-                response
-            );
-
-
-            const account =
-                response.account;
-
-
-            if (!account) {
-
-                throw new Error(
-                    "Microsoft login succeeded but no account was returned."
-                );
-            }
-
-
-            // Set active Microsoft account
-
-            msalInstance.setActiveAccount(
-                account
-            );
-
-
-            // Show user
-
-            showUser(account);
-
-
-            // =================================================
-            // CREATE IDENTITY FOR POC
-            // =================================================
-
-            const identity = {
-
-                name:
-                    account.name || "",
-
-                upn:
-                    account.username || "",
-
-                created:
-                    Date.now()
-            };
-
-
-            console.log(
-                "Logged-in Microsoft identity:",
-                identity
-            );
-
-
-            // =================================================
-            // TEMPORARY IDENTITY TOKEN
-            // =================================================
-            //
-            // This is ONLY for our current POC.
-            //
-            // It is Base64 encoded, not encrypted or signed.
-            // We will replace this with a secure method later.
-            //
-
-            const identityJson =
-                JSON.stringify(identity);
-
-
-            const identityToken =
-                btoa(identityJson);
-
-
-            // Store identity locally
-
-            sessionStorage.setItem(
-                "activityTrackerIdentity",
-                JSON.stringify(identity)
-            );
-
-
-            // =================================================
-            // REDIRECT TO ENISTON
-            // =================================================
-
-            const redirectUrl =
-                enistonUrl +
-                "?t=" +
-                encodeURIComponent(
-                    identityToken
-                );
-
-
-            showStatus(
-                "Login successful! Redirecting to Knowledge Base...",
-                "success"
-            );
-
-
-            console.log(
-                "Redirecting to:",
-                enistonUrl
-            );
-
-
-            // Give the user a moment to see
-            // the success message
-
-            setTimeout(
-                function () {
-
-                    window.location.href =
-                        redirectUrl;
-
-                },
-                700
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Login error:",
-                error
-            );
-
-
-            showStatus(
-                "Login failed:<br><br>" +
-                (
-                    error.message ||
-                    error
-                ),
-                "error"
-            );
-
-
-            setLoading(false);
-        }
-    }
-
-
-    // =========================================================
-    // LOGIN
-    // =========================================================
-
-    async function login() {
-
-        try {
-
-            setLoading(true);
-
-
-            showStatus(
-                "Opening Microsoft 365 sign-in...",
-                "info"
-            );
-
-
-            await msalInstance
-                .loginRedirect({
-
-                    scopes:
-                        loginScopes
-                });
-
-
-        } catch (error) {
-
-            console.error(
-                "Login error:",
-                error
-            );
-
-
-            showStatus(
-                "Login failed:<br><br>" +
-                (
-                    error.message ||
-                    error
-                ),
-                "error"
-            );
-
-
-            setLoading(false);
-        }
-    }
-
-
-    // =========================================================
-    // START APPLICATION
-    // =========================================================
-
-    async function start() {
-
-        console.log(
-            "Knowledge Base Login starting..."
-        );
-
-
-        try {
+            /* =================================================
+               CHECK EXISTING SESSION
+            ================================================= */
 
             const accounts =
-                msalInstance
-                    .getAllAccounts();
-
+                msalInstance.getAllAccounts();
 
             if (
+                accounts &&
                 accounts.length > 0
             ) {
 
-                msalInstance
-                    .setActiveAccount(
-                        accounts[0]
-                    );
+                console.log(
+                    "Existing Microsoft account found:",
+                    accounts[0]
+                );
 
+                setStatus(
+                    "Microsoft account detected. Click the button to continue."
+                );
+
+                return;
             }
 
-
-            await handleRedirect();
-
+            setStatus(
+                "Ready to sign in."
+            );
 
         } catch (error) {
 
             console.error(
-                "Application initialization error:",
+                "Microsoft login error:",
                 error
             );
 
-
-            showStatus(
-                "Application error:<br><br>" +
-                (
-                    error.message ||
-                    error
-                ),
-                "error"
+            setStatus(
+                "Login error. Please check the browser console."
             );
         }
     }
 
+    /* =========================================================
+       LOGIN BUTTON
+    ========================================================= */
 
-    // =========================================================
-    // START
-    // =========================================================
+    loginButton.addEventListener(
+        "click",
+        async function () {
 
-    start();
+            try {
+
+                loginButton.disabled =
+                    true;
+
+                loginText.textContent =
+                    "Opening Microsoft 365...";
+
+                setStatus(
+                    "Connecting to Microsoft 365..."
+                );
+
+                await msalInstance
+                    .loginRedirect({
+                        scopes:
+                            LOGIN_SCOPES,
+
+                        redirectUri:
+                            REDIRECT_URI
+                    });
+
+            } catch (error) {
+
+                console.error(
+                    "Login redirect error:",
+                    error
+                );
+
+                loginButton.disabled =
+                    false;
+
+                loginText.textContent =
+                    "Sign in with Microsoft 365";
+
+                setStatus(
+                    "Unable to start Microsoft login."
+                );
+            }
+        }
+    );
+
+    /* =========================================================
+       START
+    ========================================================= */
+
+    processLogin();
 
 </script>
+```
 
 </body>
-
 </html>
